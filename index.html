@@ -1,6 +1,75 @@
+<!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title>樂透走勢圖</title>
+    <style>
+        body { font-size: 18px; font-family: sans-serif; } /* 字體加大 */
+        table { border-collapse: collapse; width: 100%; text-align: center; }
+        th, td { border: 1px solid #999; padding: 8px; }
+        th { background: #f0f0f0; position: sticky; top: 0; }
+        .ball { background: red; color: white; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; display: inline-block; font-weight: bold; }
+        .miss { color: #ccc; } /* 沒中的號碼淡色顯示 */
+    </style>
+</head>
 <body>
-<h3>I am big</h3>
 
+    <div style="padding: 20px;">
+        <h2 id="info">正在讀取數據...</h2>
+        <table>
+            <thead>
+                <tr id="h-row">
+                    <th>日期</th>
+                </tr>
+            </thead>
+            <tbody id="b-row"></tbody>
+        </table>
+    </div>
+
+    <script src="dens2024.js"></script>
+    <script src="dens2025.js"></script>
+    <script src="dens2026.js"></script>
+
+    <script>
+        window.onload = function() {
+            // 1. 把三年的數據接成一個大名單
+            // 如果某年還沒寫，就給它空陣列 []
+            var allData = [].concat(
+                window.data2026 || [], 
+                window.data2025 || [], 
+                window.data2024 || []
+            );
+
+            // 2. 畫出 01 到 39 的標題
+            var hRow = document.getElementById('h-row');
+            for (var i = 1; i <= 39; i++) {
+                var n = i < 10 ? '0' + i : i;
+                hRow.insertAdjacentHTML('beforeend', '<th>' + n + '</th>');
+            }
+
+            // 3. 畫出每一行的號碼
+            var bRow = document.getElementById('b-row');
+            var html = "";
+
+            allData.forEach(function(item) {
+                var tr = '<tr><td>' + item.de + '</td>';
+                // 檢查 01 到 39 號
+                for (var j = 1; j <= 39; j++) {
+                    var numStr = j < 10 ? '0' + j : '' + j;
+                    if (item.ns.indexOf(numStr) !== -1) {
+                        // 有中，畫紅球
+                        tr += '<td><span class="ball">' + numStr + '</span></td>';
+                    } else {
+                        // 沒中，留白或畫點
+                        tr += '<td class="miss">-</td>';
+                    }
+                }
+                html += tr + '</tr>';
+            });
+
+            bRow.innerHTML = html;
+            document.getElementById('info').innerText = "已載入 2024-2026 年，共 " + allData.length + " 期";
+        };
+    </script>
 </body>
 </html>
