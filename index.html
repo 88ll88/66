@@ -2,28 +2,81 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <script src="dens2024.js"></script>
-    <script src="dens2025.js"></script>
-    <script src="dens2026.js"></script>
-    <script>
-       function startSystem() {
-           // 自動排序：確保不論加載順序，都是日期最新的在最上面
-           const finalData = window.allData.sort((a, b) => {
-               return new Date(b.de) - new Date(a.de);
-           });
-
-           // 將排序後的數據交給渲染引擎
-           render(finalData); 
-       }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今彩539跨年走勢圖</title>
     
-       // 等所有檔案加載完後執行
-       window.onload = startSystem;
-      </script>
+    <script src="https://88ll88.github.io/66/dens2024.js?v=20260126"></script>
+    <script src="https://88ll88.github.io/66/dens2025.js?v=20260126"></script>
+    <script src="https://88ll88.github.io/66/dens2026.js?v=20260126"></script>
+
+    <style>
+        body { font-size: 16px; font-family: "Microsoft JhengHei", sans-serif; margin: 0; background: #f4f7f9; }
+        .header { background: #2c3e50; color: white; padding: 10px; position: sticky; top: 0; z-index: 100; text-align: center; }
+        table { border-collapse: collapse; width: 100%; background: white; }
+        th, td { border: 1px solid #ccc; padding: 6px 2px; text-align: center; }
+        th { background: #34495e; color: white; position: sticky; top: 40px; font-size: 12px; }
+        .ball { background: #e74c3c; color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; display: inline-block; font-weight: bold; font-size: 14px; }
+        .date-text { font-size: 11px; color: #333; font-weight: bold; background: #eee; }
+        .miss { color: #eee; }
+    </style>
 </head>
 <body>
-<script>
-    document.write(allData);
-</script>
+
+    <div class="header">
+        <b id="msg">539 數據載入中...</b>
+    </div>
+    
+    <table>
+        <thead>
+            <tr id="h-row">
+                <th style="width:60px;">日期</th>
+            </tr>
+        </thead>
+        <tbody id="b-row"></tbody>
+    </table>
+
+    <script>
+        function renderTable() {
+            if (!window.allData || window.allData.length === 0) {
+                document.getElementById('msg').innerHTML = "<span style='color:yellow'>尚未偵測到資料，請點擊瀏覽器重新整理</span>";
+                return;
+            }
+
+            // 1. 自動排序：確保 2026 在最上面
+            const data = window.allData.sort((a, b) => new Date(b.de) - new Date(a.de));
+            document.getElementById('msg').innerText = "已載入 2024-2026 共 " + data.length + " 期";
+
+            // 2. 建立 01-39 標頭
+            const hr = document.getElementById('h-row');
+            if (hr.cells.length <= 1) {
+                for (let i = 1; i <= 39; i++) {
+                    hr.insertAdjacentHTML('beforeend', '<th>' + (i < 10 ? '0'+i : i) + '</th>');
+                }
+            }
+
+            // 3. 畫出內容
+            const br = document.getElementById('b-row');
+            let html = "";
+            data.forEach(item => {
+                let shortDate = item.de.substring(2).replace(/-/g, '/'); // 格式化日期如 26/01/24
+                let tr = '<tr><td class="date-text">' + shortDate + '</td>';
+                let currentNums = item.ns.map(n => parseInt(n, 10));
+                
+                for (let j = 1; j <= 39; j++) {
+                    if (currentNums.includes(j)) {
+                        tr += '<td><span class="ball">' + (j < 10 ? '0'+j : j) + '</span></td>';
+                    } else {
+                        tr += '<td class="miss">-</td>';
+                    }
+                }
+                html += tr + '</tr>';
+            });
+            br.innerHTML = html;
+        }
+
+        // 確保在各種手機環境下都能啟動
+        window.onload = renderTable;
+        setTimeout(renderTable, 1000); // 1秒後自動檢查第二次，預防手機加載延遲
+    </script>
 </body>
 </html>
-    
