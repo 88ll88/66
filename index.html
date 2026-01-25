@@ -1,75 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>樂透走勢圖</title>
+    <title>樂透跨年份自動分析系統</title>
     <style>
-        body { font-size: 18px; font-family: sans-serif; } /* 字體加大 */
-        table { border-collapse: collapse; width: 100%; text-align: center; }
-        th, td { border: 1px solid #999; padding: 8px; }
-        th { background: #f0f0f0; position: sticky; top: 0; }
-        .ball { background: red; color: white; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; display: inline-block; font-weight: bold; }
-        .miss { color: #ccc; } /* 沒中的號碼淡色顯示 */
+        /* 保留你喜歡的樣式 */
+        body { font-family: "Microsoft JhengHei", sans-serif; font-size: 12px; margin: 0; background: #f4f7f9; }
+        .nav { background: #2c3e50; padding: 10px; display: flex; gap: 5px; position: sticky; top: 0; z-index: 1000; }
+        .nav-btn { background: #ecf0f1; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .nav-btn.active { background: #e74c3c; color: white; }
+        .container { padding: 10px; }
+        .tab-content { display: none; background: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-content.active { display: block; }
+        table { border-collapse: collapse; width: 100%; text-align: center; border: 1px solid #ccc; }
+        th, td { border: 1px solid #ccc; padding: 3px; }
+        .red-ball { background: #ff4d4d; color: white; border-radius: 50%; width: 20px; height: 20px; line-height: 20px; display: inline-block; }
+        .bg-miss { background: #ffffcc; color: #d32f2f; }
     </style>
 </head>
 <body>
 
-    <div style="padding: 20px;">
-        <h2 id="info">正在讀取數據...</h2>
-        <table>
-            <thead>
-                <tr id="h-row">
-                    <th>日期</th>
-                </tr>
-            </thead>
-            <tbody id="b-row"></tbody>
+<div class="nav">
+    <button class="nav-btn active" onclick="switchTab('trend')">走勢圖 (跨年版)</button>
+    <button class="nav-btn" onclick="switchTab('stat')">遺漏統計表</button>
+</div>
+
+<div class="container">
+    <div id="info" style="margin-bottom:10px; font-weight:bold;">數據載入中...</div>
+
+    <div id="trend" class="tab-content active">
+        <table id="mainTable">
+            <thead><tr id="tableHead"><th>期號</th><th>日期</th></tr></thead>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
 
-    <script src="dens2024.js"></script>
-    <script src="dens2025.js"></script>
-    <script src="dens2026.js"></script>
+    <div id="stat" class="tab-content">
+        <table id="missTable">
+            <thead>
+                <tr><th>號碼</th><th>最近未出現(遺漏)</th><th>出現總數</th><th>平均間隔</th></tr>
+            </thead>
+            <tbody id="missBody"></tbody>
+        </table>
+    </div>
+</div>
 
-    <script>
-        window.onload = function() {
-            // 1. 把三年的數據接成一個大名單
-            // 如果某年還沒寫，就給它空陣列 []
-            var allData = [].concat(
-                window.data2026 || [], 
-                window.data2025 || [], 
-                window.data2024 || []
-            );
+<script src="dens2024.js"></script>
+<script src="dens2025.js"></script>
+<script src="dens2026.js"></script>
 
-            // 2. 畫出 01 到 39 的標題
-            var hRow = document.getElementById('h-row');
-            for (var i = 1; i <= 39; i++) {
-                var n = i < 10 ? '0' + i : i;
-                hRow.insertAdjacentHTML('beforeend', '<th>' + n + '</th>');
-            }
+<script>
+    function init() {
+        if (!window.allData) {
+            document.getElementById('info').innerHTML = "找不到數據，請檢查檔案名稱！";
+            return;
+        }
 
-            // 3. 畫出每一行的號碼
-            var bRow = document.getElementById('b-row');
-            var html = "";
+        // 1. 自動排序 (最新日期在最上面)
+        const finalData = window.allData.sort((a, b) => new Date(b.de) - new Date(a.de));
+        const totalCount = finalData.length;
+        document.getElementById('info').innerHTML = `目前跨年共加載: <span style="color:red">${totalCount}</span> 期數據`;
 
-            allData.forEach(function(item) {
-                var tr = '<tr><td>' + item.de + '</td>';
-                // 檢查 01 到 39 號
-                for (var j = 1; j <= 39; j++) {
-                    var numStr = j < 10 ? '0' + j : '' + j;
-                    if (item.ns.indexOf(numStr) !== -1) {
-                        // 有中，畫紅球
-                        tr += '<td><span class="ball">' + numStr + '</span></td>';
-                    } else {
-                        // 沒中，留白或畫點
-                        tr += '<td class="miss">-</td>';
+        // 2. 繪製走勢圖標頭
+        const head = document.getElementById('tableHead');
+        for(let i=1; i<=39; i++) {
+            head.insertAdjacentHTML('beforeend', `<th>${i<10?'0'+i:i}</th>`);
+        }
+
+        // 3. 繪製數據行
+        const tbody = document.getElementById('tableBody');
+        finalData.forEach((r, idx) => {
+            let row = `<tr><td>${r.id}</td><td>${r.de}</td>`;
+            for(let i=1; i<=39; i++) {
+                if(r.ns.includes(i)) {
+                    row += `<td><span class="red-ball">${i}</span></td>`;
+                } else {
+                    // 計算遺漏值：從這期往回看最近哪一期有開
+                    let m = 0;
+                    for(let k=idx; k < finalData.length; k++) {
+                        if(finalData[k].ns.includes(i)) break;
+                        m++;
                     }
+                    row += `<td class="${m>=10?'bg-miss':''}">${m}</td>`;
                 }
-                html += tr + '</tr>';
-            });
+            }
+            tbody.insertAdjacentHTML('beforeend', row + `</tr>`);
+        });
 
-            bRow.innerHTML = html;
-            document.getElementById('info').innerText = "已載入 2024-2026 年，共 " + allData.length + " 期";
-        };
-    </script>
+        // 4. 計算遺漏統計表 (參考)
+        const missBody = document.getElementById('missBody');
+        for(let n=1; n<=39; n++) {
+            let count = finalData.filter(r => r.ns.includes(n)).length; // 出現總數
+            let currentMiss = 0; // 最近未出現期數
+            for(let r of finalData) {
+                if(r.ns.includes(n)) break;
+                currentMiss++;
+            }
+            let avgInterval = (totalCount / (count || 1)).toFixed(2); // 平均間隔
+            
+            missBody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td><b>${n}</b></td>
+                    <td style="color:red">${currentMiss}</td>
+                    <td>${count}</td>
+                    <td>${avgInterval}</td>
+                </tr>
+            `);
+        }
+    }
+
+    function switchTab(id) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // 當所有 JS 載入完後啟動
+    window.onload = init;
+</script>
 </body>
 </html>
