@@ -1,17 +1,26 @@
-<script src="dens2024.js"></script>
-<script src="dens2025.js"></script>
-<script src="dens2026.js"></script>
-<script>
-    function startSystem() {
-        // 自動排序：確保不論加載順序，都是日期最新的在最上面
-        const finalData = window.allData.sort((a, b) => {
-            return new Date(b.de) - new Date(a.de);
-        });
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <script src="dens2024.js"></script>
+    <script src="dens2025.js"></script>
+    <script src="dens2026.js"></script>
+    <script>
+       function startSystem() {
+           // 自動排序：確保不論加載順序，都是日期最新的在最上面
+           const finalData = window.allData.sort((a, b) => {
+               return new Date(b.de) - new Date(a.de);
+           });
 
-        // 將排序後的數據交給渲染引擎
-        render(finalData); 
-    }
+           // 將排序後的數據交給渲染引擎
+           render(finalData); 
+       }
     
-    // 等所有檔案加載完後執行
-    window.onload = startSystem;
-</script>
+       // 等所有檔案加載完後執行
+       window.onload = startSystem;
+      </script>
+</head>
+<body>
+</body>
+</html>
+    
