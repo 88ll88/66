@@ -1,82 +1,42 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>今彩539跨年走勢圖</title>
-    
-    <script src="https://88ll88.github.io/66/dens2024.js?v=20260126"></script>
-    <script src="https://88ll88.github.io/66/dens2025.js?v=20260126"></script>
-    <script src="https://88ll88.github.io/66/dens2026.js?v=20260126"></script>
-
-    <style>
-        body { font-size: 16px; font-family: "Microsoft JhengHei", sans-serif; margin: 0; background: #f4f7f9; }
-        .header { background: #2c3e50; color: white; padding: 10px; position: sticky; top: 0; z-index: 100; text-align: center; }
-        table { border-collapse: collapse; width: 100%; background: white; }
-        th, td { border: 1px solid #ccc; padding: 6px 2px; text-align: center; }
-        th { background: #34495e; color: white; position: sticky; top: 40px; font-size: 12px; }
-        .ball { background: #e74c3c; color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; display: inline-block; font-weight: bold; font-size: 14px; }
-        .date-text { font-size: 11px; color: #333; font-weight: bold; background: #eee; }
-        .miss { color: #eee; }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <b id="msg">539 數據載入中...</b>
-    </div>
-    
-    <table>
-        <thead>
-            <tr id="h-row">
-                <th style="width:60px;">日期</th>
-            </tr>
-        </thead>
-        <tbody id="b-row"></tbody>
-    </table>
-
-    <script>
-        function renderTable() {
-            if (!window.allData || window.allData.length === 0) {
-                document.getElementById('msg').innerHTML = "<span style='color:yellow'>尚未偵測到資料，請點擊瀏覽器重新整理</span>";
-                return;
-            }
-
-            // 1. 自動排序：確保 2026 在最上面
-            const data = window.allData.sort((a, b) => new Date(b.de) - new Date(a.de));
-            document.getElementById('msg').innerText = "已載入 2024-2026 共 " + data.length + " 期";
-
-            // 2. 建立 01-39 標頭
-            const hr = document.getElementById('h-row');
-            if (hr.cells.length <= 1) {
-                for (let i = 1; i <= 39; i++) {
-                    hr.insertAdjacentHTML('beforeend', '<th>' + (i < 10 ? '0'+i : i) + '</th>');
-                }
-            }
-
-            // 3. 畫出內容
-            const br = document.getElementById('b-row');
-            let html = "";
-            data.forEach(item => {
-                let shortDate = item.de.substring(2).replace(/-/g, '/'); // 格式化日期如 26/01/24
-                let tr = '<tr><td class="date-text">' + shortDate + '</td>';
-                let currentNums = item.ns.map(n => parseInt(n, 10));
-                
-                for (let j = 1; j <= 39; j++) {
-                    if (currentNums.includes(j)) {
-                        tr += '<td><span class="ball">' + (j < 10 ? '0'+j : j) + '</span></td>';
-                    } else {
-                        tr += '<td class="miss">-</td>';
-                    }
-                }
-                html += tr + '</tr>';
-            });
-            br.innerHTML = html;
-        }
-
-        // 確保在各種手機環境下都能啟動
-        window.onload = renderTable;
-        setTimeout(renderTable, 1000); // 1秒後自動檢查第二次，預防手機加載延遲
-    </script>
-</body>
-</html>
+var A26=[
+{"de":"2026-02-15","ns":["11","13","18","22","34"]},
+{"de":"2026-02-14","ns":["01","03","13","31","36"]}, 
+{"de":"2026-02-13","ns":["04","28","31","33","34"]}, 
+{"de":"2026-02-12","ns":["01","12","21","35","37"]},     
+{"de":"2026-02-11","ns":["11","15","18","29","33"]},   
+{"de":"2026-02-10","ns":["10","11","17","22","36"]},
+{"de":"2026-02-09","ns":["16","21","25","31","35"]},  
+{"de":"2026-02-07","ns":["03","08","22","27","32"]},
+{"de":"2026-02-06","ns":["01","06","29","32","34"]},
+{"de":"2026-02-05","ns":["08","09","13","32","35"]},  
+{"de":"2026-02-04","ns":["08","17","22","27","28"]}, 
+{"de":"2026-02-03","ns":["03","05","11","15","23"]},
+{"de":"2026-02-02","ns":["06","08","31","37","38"]},
+{"de":"2026-01-31","ns":["05","12","16","21","32"]},
+{"de":"2026-01-30","ns":["16","17","29","30","36"]},
+{"de":"2026-01-29","ns":["06","11","28","26","27"]},  
+{"de":"2026-01-28","ns":["10","11","23","24","29"]},
+{"de":"2026-01-27","ns":["05","17","18","23","32"]},
+{"de":"2026-01-26","ns":["06","15","23","26","30"]},
+{"de":"2026-01-24","ns":["06","07","15","35","37"]},
+{"de":"2026-01-23","ns":["03","11","12","21","31"]},
+{"de":"2026-01-22","ns":["03","06","11","30","34"]},
+{"de":"2026-01-21","ns":["04","15","23","27","38"]},
+{"de":"2026-01-20","ns":["16","19","23","25","34"]},
+{"de":"2026-01-19","ns":["12","16","23","24","29"]},
+{"de":"2026-01-17","ns":["02","10","11","24","37"]},
+{"de":"2026-01-16","ns":["18","19","22","27","29"]},
+{"de":"2026-01-15","ns":["01","02","03","19","36"]},
+{"de":"2026-01-14","ns":["01","02","16","33","35"]},
+{"de":"2026-01-13","ns":["06","16","17","19","31"]},
+{"de":"2026-01-12","ns":["03","13","18","24","30"]},
+{"de":"2026-01-10","ns":["11","25","26","34","38"]},
+{"de":"2026-01-09","ns":["01","12","14","22","34"]},
+{"de":"2026-01-08","ns":["03","08","10","21","30"]},
+{"de":"2026-01-07","ns":["05","10","14","15","28"]},
+{"de":"2026-01-06","ns":["01","02","06","11","33"]},
+{"de":"2026-01-05","ns":["10","16","18","34","39"]},
+{"de":"2026-01-03","ns":["22","23","31","32","38"]},
+{"de":"2026-01-02","ns":["17","18","25","36","39"]},
+{"de":"2026-01-01","ns":["15","16","18","29","36"]}
+];            
